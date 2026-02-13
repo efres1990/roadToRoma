@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Road to Roma 🏛️</title>
+  <link rel="stylesheet" href="style.css" />
+  <meta name="theme-color" content="#0b1020" />
+</head>
+<body>
+  <div class="bg">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="grain"></div>
+  </div>
+
+  <main class="shell">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="heroCard">
+        <div class="heroTop">
+          <div class="badge">🏁 Road to Roma</div>
+          <button id="shareBtn" class="iconBtn" title="Copiar link para WhatsApp">
+            <span class="icon">🔗</span><span class="hideSm">Copiar link</span>
+          </button>
+        </div>
+
+        <div class="heroGrid">
+          <div class="heroText">
+            <h1>
+              <span class="soft">Para</span>
+              <span id="name" class="accent">mi campeona</span>
+              <span class="soft">💚</span>
+            </h1>
+            <p class="lead" id="raceInfo">—</p>
+
+            <div class="countWrap">
+              <div class="countBox">
+                <div class="countLabel">Cuenta atrás</div>
+                <div class="timer" id="timer">—</div>
+                <div class="chips">
+                  <span class="chip" id="startChip">Salida: —</span>
+                  <span class="chip" id="limitChip">Límite: —</span>
+                </div>
+              </div>
+
+              <div class="noteBox">
+                <div class="noteTitle">Un recordatorio</div>
+                <div class="noteBody" id="loveNote">—</div>
+                <button id="newNoteBtn" class="btn">Otro 💫</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="heroPhoto">
+            <div class="photoFrame">
+              <img src="assets/novia.jpg" alt="Foto" />
+            </div>
+            <div class="photoCaption">
+              <span class="pill">✨ Tu energía</span>
+              <span class="pill">🏛️ Roma te espera</span>
+              <span class="pill">🏃‍♀️ 42,195 km</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RECORRIDO -->
+    <section class="section">
+      <div class="sectionHead">
+        <h2>El recorrido</h2>
+        <p class="muted">Mapa oficial + puntos icónicos para irlos “coleccionando”.</p>
+      </div>
+
+      <div class="grid2">
+        <article class="card">
+          <div class="cardTitle">🗺️ Mapa</div>
+          <div class="mapWrap">
+            <img id="routeImg" alt="Mapa del recorrido Run Rome The Marathon" />
+          </div>
+          <div class="cardFoot">
+            <a class="link" id="officialLink" href="#" target="_blank" rel="noreferrer">Ver en la web oficial ↗</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="cardTitle">🏛️ Highlights</div>
+          <ul class="bullets" id="highlights"></ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- COSAS QUE SABER -->
+    <section class="section">
+      <div class="sectionHead">
+        <h2>Cosas que tiene que saber</h2>
+        <p class="muted">Lo importante para el día de carrera (y para ir tranquila).</p>
+      </div>
+
+      <div class="accordion" id="tips"></div>
+    </section>
+
+    <!-- CHECKLIST -->
+    <section class="section">
+      <div class="sectionHead">
+        <h2>Checklist</h2>
+        <p class="muted">Marca y listo. Se guarda en tu móvil.</p>
+      </div>
+
+      <article class="card">
+        <ul class="list" id="checkList"></ul>
+
+        <div class="progress">
+          <div class="bar"><div id="barFill"></div></div>
+          <div class="muted" id="progressText"></div>
+        </div>
+
+        <div class="rowBtns">
+          <button id="resetBtn" class="btn ghost">Reiniciar</button>
+          <button id="confettiBtn" class="btn">Modo “vamos” 🎉</button>
+        </div>
+      </article>
+    </section>
+
+    <footer class="footer">
+      <div class="footerCard">
+        <div class="footerBig">Estoy contigo en cada km 💚</div>
+        <div class="muted small">
+          (Si hoy cuesta: un paso más y ya.)
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <canvas id="confetti" aria-hidden="true"></canvas>
+  <script src="app.js"></script>
+</body>
+</html>
