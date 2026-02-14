@@ -663,45 +663,6 @@ function renderAchievements(){
     achievementsEl.appendChild(div);
   });
 }
-// =================== HISTORIA ===================
-const milestonesData = [
-  { id:"10k", title:"Primer 10K", unlocked:true },
-  { id:"media", title:"Primera Media Maratón", unlocked:true },
-  { id:"20k", title:"Primer 20K", unlocked:true },
-  { id:"25k", title:"Primer 25K", unlocked:true },
-  { id:"maraton", title:"Primera Maratón", unlocked:false }
-];
-
-function renderMilestones(){
-  const el = $("milestones");
-  if(!el) return;
-  el.innerHTML = "";
-
-  const today = new Date();
-  const raceDate = new Date(CONFIG.carreraFechaISO);
-
-  milestonesData.forEach(m=>{
-    let unlocked = m.unlocked;
-
-    if(m.id === "maraton" && today >= raceDate){
-      unlocked = true;
-    }
-
-    const li = document.createElement("li");
-    li.className = unlocked ? "tlRow" : "tlRow locked";
-    li.innerHTML = `
-      <div class="tlLeft">
-        <div class="tlDay">${unlocked ? "🏅" : "🔒"}</div>
-      </div>
-      <div class="tlMain">
-        <strong>${m.title}</strong>
-      </div>
-    `;
-    el.appendChild(li);
-  });
-}
-renderMilestones();
-
 
 // =================== CAMBIO DÍA ANTES ===================
 (function(){
