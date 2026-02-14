@@ -1,12 +1,10 @@
 // ========= PERSONALIZA AQUÍ =========
 const CONFIG = {
-  noviaNombre: "Tu Novia",
+  noviaNombre: "Ana",
   carreraNombre: "Acea Run Rome The Marathon",
-  // Ajusta al día/hora de su edición (hora local de Roma)
-  carreraFechaISO: "2026-03-22T08:30:00",
+  carreraFechaISO: "2026-03-22T08:30:00", // hora local Roma
   limiteTexto: "6h30",
   oficialHome: "https://www.runromethemarathon.com/",
-  // Imagen del mapa oficial publicada en su web
   mapaURL: "https://www.runromethemarathon.com/wp-content/uploads/2025/10/mappa-orizzontale-scaled.jpg",
 
   loveNotes: [
@@ -15,6 +13,22 @@ const CONFIG = {
     "Cuando lleguen las dudas, acuérdate de lo valiente que eres.",
     "Tú y tu constancia: el dúo más peligroso 😄",
     "Estoy orgulloso de ti, en los días buenos y en los raros."
+  ],
+
+  nerviosLetter: [
+    "Si estás leyendo esto es porque los nervios están hablando.",
+    "Pero escucha esto: **yo te conozco**.",
+    "Sé cómo eres cuando decides algo: constante, valiente y cabezona (de la buena).",
+    "",
+    "El día de la carrera no necesitas sentirte segura…",
+    "solo necesitas **dar el siguiente paso**.",
+    "",
+    "Y cuando llegues al **km 20** y salga el clásico “me cago”…",
+    "te acuerdas de nuestra broma, sonríes… y sigues.",
+    "",
+    "**Roma no te va a romper. Roma te va a coronar.** 👑🏛️",
+    "",
+    "Estoy contigo en cada km. 💚"
   ],
 
   highlights: [
@@ -49,12 +63,38 @@ const CONFIG = {
     "Plan de ritmo (A/B) + mantra para el km 30",
     "Punto de encuentro post-meta",
     "Cargar reloj/móvil y modo no molestar"
+  ],
+
+  simEvents: [
+    { km: 1,  msg: "Respira. Hoy es aventura. Hoy es historia." },
+    { km: 5,  msg: "Vas cómoda. Suave y controlada. Sonríe un segundo." },
+    { km: 10, msg: "Ritmo sólido. No regales energía. Guarda para más tarde." },
+    { km: 15, msg: "Aquí ya estás trabajando. Pero tú entrenaste para esto." },
+    { km: 20, msg: "💩 **ALERTA KM 20**: Nivel de “me cago” detectado. Sonríe por la broma… y sigue. Eres una diosa romana." },
+    { km: 25, msg: "Mitad larga. Hidratación. Un gel. Y cabeza fría." },
+    { km: 30, msg: "Ahora empieza la maratón. Un paso. Otro paso. Eso es todo." },
+    { km: 35, msg: "Esto es coraje puro. Ya nadie te quita lo que eres." },
+    { km: 40, msg: "YA LO TIENES. Mira Roma. Es tuya." },
+    { km: 42, msg: "🏁 META: Primera maratón. Te has coronado. 💚👑" }
+  ],
+
+  // Semana de carrera (tareas sugeridas por día)
+  weekPlan: [
+    { offset: 7, title: "7 días", tasks: ["Revisar zapatillas/ropa (sin estrenar)", "Ver ruta a salida + plan B", "Dormir bien (prioridad)"] },
+    { offset: 6, title: "6 días", tasks: ["Último rodaje suave", "Hidratación constante", "Visualizar el km 20 con sonrisa 😄"] },
+    { offset: 5, title: "5 días", tasks: ["Check geles/sales (los que ya usas)", "Preparar imperdibles/vaselina", "No inventos"] },
+    { offset: 4, title: "4 días", tasks: ["Cena simple (carbos normales)", "Revisar dorsal/chip si aplica", "Paseo suave"] },
+    { offset: 3, title: "3 días", tasks: ["Subir carbos un poco (sin atracón)", "Evitar comidas raras", "Plan de ritmo A/B revisado"] },
+    { offset: 2, title: "2 días", tasks: ["Recoger dorsal (si toca)", "Dejar bolsa lista", "Cargar reloj/móvil"] },
+    { offset: 1, title: "1 día", tasks: ["Desayuno decidido y probado", "Ropa de espera lista", "Acostarse pronto (aunque cueste)"] },
+    { offset: 0, title: "Race Day", tasks: ["Desayuno + hidratación", "Vaselina + geles", "Sonrisa en la salida. Roma."] }
   ]
 };
 // ====================================
 
 // --- Helpers ---
 const $ = (id) => document.getElementById(id);
+const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
 
 function formatDateTime(iso){
   const d = new Date(iso);
@@ -63,20 +103,47 @@ function formatDateTime(iso){
     hour:"2-digit", minute:"2-digit"
   });
 }
-
 function diffParts(targetDate){
   const now = new Date();
   const ms = targetDate - now;
   const sign = ms < 0 ? -1 : 1;
   const abs = Math.abs(ms);
-
   const s = Math.floor(abs/1000);
   const days = Math.floor(s / 86400);
   const hours = Math.floor((s % 86400) / 3600);
   const mins = Math.floor((s % 3600) / 60);
   const secs = s % 60;
-
   return { sign, days, hours, mins, secs, ms };
+}
+function pad2(n){ return String(n).padStart(2,"0"); }
+
+function parseHHMM(str){
+  // accepts "4:30", "04:30", "4.30", "4 30"
+  if(!str) return null;
+  const cleaned = String(str).trim().replace(".",":").replace(" ",":");
+  const m = cleaned.match(/^(\d{1,2})\s*:\s*(\d{1,2})$/);
+  if(!m) return null;
+  const h = Number(m[1]);
+  const mm = Number(m[2]);
+  if(Number.isNaN(h)||Number.isNaN(mm)||mm>=60) return null;
+  return h*3600 + mm*60;
+}
+function formatTimeFromSeconds(totalSec){
+  const h = Math.floor(totalSec/3600);
+  const m = Math.floor((totalSec%3600)/60);
+  const s = Math.floor(totalSec%60);
+  if(h>0) return `${pad2(h)}:${pad2(m)}:${pad2(s)}`;
+  return `${pad2(m)}:${pad2(s)}`;
+}
+function paceFrom(totalSec, distanceKm){
+  const secPerKm = totalSec / distanceKm;
+  const m = Math.floor(secPerKm/60);
+  const s = Math.round(secPerKm%60);
+  return `${m}:${pad2(s)}/km`;
+}
+function splitTime(totalSec, splitKm, distanceKm){
+  const secPerKm = totalSec / distanceKm;
+  return secPerKm * splitKm;
 }
 
 // --- Bind basics ---
@@ -90,14 +157,22 @@ $("limitChip").textContent = `Límite: ${CONFIG.limiteTexto}`;
 
 // --- Countdown ---
 const target = new Date(CONFIG.carreraFechaISO);
+let lastDaysLeft = null;
+
 function tick(){
   const { sign, days, hours, mins, secs } = diffParts(target);
   if(sign < 0){
     $("timer").textContent = `¡A por ello! 🏁`;
+    updateWeekUI(0);
     return;
   }
-  const pad = (n)=> String(n).padStart(2,"0");
-  $("timer").textContent = `${days}d ${pad(hours)}:${pad(mins)}:${pad(secs)}`;
+  $("timer").textContent = `${days}d ${pad2(hours)}:${pad2(mins)}:${pad2(secs)}`;
+
+  // update week timeline when "days left" changes
+  if(lastDaysLeft !== days){
+    lastDaysLeft = days;
+    updateWeekUI(days);
+  }
 }
 tick();
 setInterval(tick, 1000);
@@ -144,8 +219,8 @@ CONFIG.tips.forEach((t, idx)=>{
   tipsEl.appendChild(item);
 });
 
-// --- Checklist with localStorage ---
-const storageKey = "roadToRomaChecklist_v2";
+// --- Checklist general with localStorage ---
+const storageKey = "roadToRomaChecklist_v4";
 const saved = JSON.parse(localStorage.getItem(storageKey) || "null");
 let state = saved?.state || Array(CONFIG.checklist.length).fill(false);
 
@@ -156,7 +231,6 @@ const progressText = $("progressText");
 function persist(){
   localStorage.setItem(storageKey, JSON.stringify({ state }));
 }
-
 function renderProgress(){
   const done = state.filter(Boolean).length;
   const total = state.length;
@@ -164,7 +238,6 @@ function renderProgress(){
   barFill.style.width = `${pct}%`;
   progressText.textContent = `${done}/${total} completados (${pct}%)`;
 }
-
 function renderChecklist(){
   list.innerHTML = "";
   CONFIG.checklist.forEach((txt, i)=>{
@@ -191,7 +264,7 @@ $("resetBtn").addEventListener("click", ()=>{
   renderChecklist();
 });
 
-// --- Copy link button (WhatsApp friendly) ---
+// --- Copy link button ---
 $("shareBtn").addEventListener("click", async ()=>{
   try{
     await navigator.clipboard.writeText(window.location.href);
@@ -202,7 +275,333 @@ $("shareBtn").addEventListener("click", async ()=>{
   }
 });
 
-// --- Mini confetti (canvas) ---
+// =================== MODALES + KM20 + SIM ===================
+
+// Modal helpers
+function openModal(id){
+  const el = $(id);
+  el.classList.add("open");
+  el.setAttribute("aria-hidden", "false");
+}
+function closeModal(id){
+  const el = $(id);
+  el.classList.remove("open");
+  el.setAttribute("aria-hidden", "true");
+}
+document.addEventListener("click", (e)=>{
+  const closeId = e.target?.getAttribute?.("data-close");
+  if(closeId) closeModal(closeId);
+  if(e.target.classList?.contains("modal")) closeModal(e.target.id);
+});
+document.addEventListener("keydown", (e)=>{
+  if(e.key === "Escape"){
+    ["modalNervios","modalSim"].forEach(id => closeModal(id));
+  }
+});
+
+// 💌 Nervios letter
+$("nerviosText").innerHTML = CONFIG.nerviosLetter
+  .map(line => line === "" ? "<br/>" : line.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"))
+  .join("<br/>");
+
+$("nerviosBtn").addEventListener("click", ()=> openModal("modalNervios"));
+$("nerviosOk").addEventListener("click", ()=>{
+  closeModal("modalNervios");
+  burst(120);
+});
+
+// ⚠️ KM20 mode (broma + drama)
+$("km20Btn").addEventListener("click", ()=>{
+  document.body.classList.add("km20");
+  $("loveNote").innerHTML =
+    "⚠️ <strong>ALERTA:</strong> Se aproxima el <strong>KM 20</strong>…<br/>" +
+    "Nivel de “me cago” aumentando… 😄<br/><br/>" +
+    "Respira. Sonríe por nuestra broma.<br/>" +
+    "<strong>Y sigues.</strong> Porque eres una <strong>diosa romana</strong> 💚🏛️";
+  burst(160);
+  setTimeout(()=> document.body.classList.remove("km20"), 7000);
+});
+
+// 🏁 Simulador
+let simRunning = false;
+let simKm = 0;
+let simSec = 0;
+let simTimer = null;
+
+function simRender(){
+  $("simKm").textContent = String(simKm);
+  $("simTime").textContent = `${pad2(Math.floor(simSec/60))}:${pad2(simSec%60)}`;
+  const ev = CONFIG.simEvents.find(x => x.km === simKm);
+  if(ev) $("simMsg").innerHTML = ev.msg.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+}
+function simStart(){
+  simRunning = true;
+  simKm = 0;
+  simSec = 0;
+  $("simNext").disabled = false;
+  $("simStart").disabled = true;
+  $("simMsg").textContent = "Salida. Control. Disfruta el principio.";
+  simRender();
+  if(simTimer) clearInterval(simTimer);
+  simTimer = setInterval(()=>{ simSec++; simRender(); }, 1000);
+}
+function simStop(){
+  simRunning = false;
+  $("simNext").disabled = true;
+  $("simStart").disabled = false;
+  if(simTimer) clearInterval(simTimer);
+  simTimer = null;
+  $("simMsg").textContent = "Simulación parada. Cuando quieras, volvemos a la salida.";
+  simRender();
+}
+function simNextKm(){
+  if(!simRunning) return;
+  simKm++;
+  if(simKm === 20){
+    document.body.classList.add("km20");
+    setTimeout(()=> document.body.classList.remove("km20"), 4500);
+    burst(180);
+  }
+  if(simKm >= 42){
+    simKm = 42;
+    simRender();
+    burst(220);
+    simStop();
+    return;
+  }
+  simRender();
+}
+$("simBtn").addEventListener("click", ()=> openModal("modalSim"));
+$("simStart").addEventListener("click", simStart);
+$("simStop").addEventListener("click", ()=> { simStop(); closeModal("modalSim"); });
+$("simNext").addEventListener("click", simNextKm);
+
+// =================== FUNCIONALIDAD: PLAN KM20 ===================
+const planKey = "roadToRoma_km20plan_v1";
+const planPreview = $("planPreview");
+
+function loadPlan(){
+  const saved = JSON.parse(localStorage.getItem(planKey) || "null");
+  if(!saved) return;
+  $("planGelKm").value = saved.gelKm ?? "";
+  $("planWaterKm").value = saved.waterKm ?? "";
+  $("planB").value = saved.planB ?? "";
+  $("planMantra").value = saved.mantra ?? "";
+}
+function getPlan(){
+  return {
+    gelKm: Number($("planGelKm").value || 0),
+    waterKm: Number($("planWaterKm").value || 0),
+    planB: $("planB").value.trim(),
+    mantra: $("planMantra").value.trim(),
+  };
+}
+function savePlan(){
+  const p = getPlan();
+  localStorage.setItem(planKey, JSON.stringify(p));
+  planPreview.hidden = false;
+  planPreview.innerHTML = `✅ Plan guardado. Cuando llegue el <strong>KM 20</strong>, pulsa “Estoy en el KM 20”.`;
+  burst(90);
+}
+function showKm20(){
+  const p = JSON.parse(localStorage.getItem(planKey) || "null") || getPlan();
+  planPreview.hidden = false;
+  planPreview.innerHTML =
+    `🧱 <strong>KM 20</strong> — modo control<br/><br/>` +
+    `🍯 Gel: <strong>${p.gelKm ? "km " + p.gelKm : "—"}</strong><br/>` +
+    `💧 Agua: <strong>${p.waterKm ? "km " + p.waterKm : "—"}</strong><br/>` +
+    `🅱️ Plan B: <strong>${p.planB || "—"}</strong><br/>` +
+    `🧠 Mantra: <strong>${p.mantra || "—"}</strong><br/><br/>` +
+    `Y sí… si toca “me cago”, te ríes y sigues 😄`;
+  document.body.classList.add("km20");
+  setTimeout(()=> document.body.classList.remove("km20"), 3500);
+}
+$("savePlanBtn").addEventListener("click", savePlan);
+$("showKm20Btn").addEventListener("click", ()=>{ showKm20(); burst(120); });
+loadPlan();
+
+// =================== FUNCIONALIDAD: CALCULADORA RITMOS ===================
+const paceKey = "roadToRoma_pace_v1";
+const paceOut = $("paceOut");
+
+function renderPace(totalSecA, distanceKm, plusMin){
+  const totalSecB = totalSecA + (plusMin*60);
+  const splits = [
+    { name:"5K", km:5 },
+    { name:"10K", km:10 },
+    { name:"Media", km: distanceKm >= 21 ? 21.0975 : distanceKm/2 },
+    { name:"30K", km: distanceKm >= 30 ? 30 : null },
+    { name:"Meta", km: distanceKm }
+  ].filter(s => s.km !== null && s.km <= distanceKm + 1e-9);
+
+  const rows = (sec, label) => splits.map(s=>{
+    const t = (s.name === "Meta") ? sec : splitTime(sec, s.km, distanceKm);
+    return `<tr><td>${s.name}</td><td>${formatTimeFromSeconds(t)}</td></tr>`;
+  }).join("");
+
+  const paceA = paceFrom(totalSecA, distanceKm);
+  const paceB = paceFrom(totalSecB, distanceKm);
+
+  paceOut.hidden = false;
+  paceOut.innerHTML = `
+    <div>
+      <span class="paceBadge">Plan A</span>
+      <strong style="margin-left:8px">${paceA}</strong>
+      <span class="muted" style="margin-left:8px">(${formatTimeFromSeconds(totalSecA)})</span>
+    </div>
+    <div style="margin-top:6px">
+      <span class="paceBadge">Plan B</span>
+      <strong style="margin-left:8px">${paceB}</strong>
+      <span class="muted" style="margin-left:8px">(${formatTimeFromSeconds(totalSecB)})</span>
+    </div>
+
+    <div class="paceGrid">
+      <div>
+        <div class="muted small" style="margin:10px 0 8px; font-weight:900">Parciales Plan A</div>
+        <table class="paceTable">
+          <thead><tr><th>Split</th><th>Tiempo</th></tr></thead>
+          <tbody>${rows(totalSecA,"A")}</tbody>
+        </table>
+      </div>
+      <div>
+        <div class="muted small" style="margin:10px 0 8px; font-weight:900">Parciales Plan B</div>
+        <table class="paceTable">
+          <thead><tr><th>Split</th><th>Tiempo</th></tr></thead>
+          <tbody>${rows(totalSecB,"B")}</tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function loadPace(){
+  const saved = JSON.parse(localStorage.getItem(paceKey) || "null");
+  if(!saved) return;
+  $("goalTime").value = saved.goalTime ?? "";
+  $("goalPlus").value = saved.goalPlus ?? "";
+  $("distance").value = String(saved.distance ?? "42.195");
+  // render if valid
+  const base = parseHHMM($("goalTime").value);
+  const dist = Number($("distance").value);
+  const plus = Number($("goalPlus").value || 0);
+  if(base) renderPace(base, dist, plus);
+}
+
+function calcPace(){
+  const base = parseHHMM($("goalTime").value);
+  const dist = Number($("distance").value);
+  const plus = clamp(Number($("goalPlus").value || 0), 0, 240);
+  if(!base){
+    paceOut.hidden = false;
+    paceOut.innerHTML = `Pon el objetivo como <strong>hh:mm</strong> (ej: <strong>04:30</strong>).`;
+    return;
+  }
+  renderPace(base, dist, plus);
+}
+
+function savePace(){
+  const payload = {
+    goalTime: $("goalTime").value.trim(),
+    goalPlus: $("goalPlus").value,
+    distance: Number($("distance").value)
+  };
+  localStorage.setItem(paceKey, JSON.stringify(payload));
+  burst(90);
+}
+
+$("calcBtn").addEventListener("click", calcPace);
+$("savePaceBtn").addEventListener("click", savePace);
+loadPace();
+
+// =================== FUNCIONALIDAD: SEMANA DE CARRERA ===================
+const weekKey = "roadToRoma_week_v1";
+let weekState = JSON.parse(localStorage.getItem(weekKey) || "null") || {}; // { "offset:taskIndex": true }
+
+function saveWeek(){
+  localStorage.setItem(weekKey, JSON.stringify(weekState));
+}
+
+function updateWeekUI(daysLeft){
+  // status line
+  let status = "";
+  if(daysLeft > 7) status = `Faltan <strong>${daysLeft}</strong> días. Aún hay margen: constancia + calma.`;
+  else if(daysLeft > 1) status = `Estamos en la <strong>semana de carrera</strong>. Menos es más.`;
+  else if(daysLeft === 1) status = `Mañana es el día. Nada de inventos. Tú mandas.`;
+  else status = `Hoy es el día. Respira. Sonríe. Roma. 🏁`;
+  $("weekStatus").innerHTML = status;
+
+  // show only relevant items: from min(7, daysLeft) down to 0
+  const maxOffset = clamp(daysLeft, 0, 999);
+  const showOffsets = CONFIG.weekPlan
+    .map(x => x.offset)
+    .filter(off => off <= 7 && off <= maxOffset)
+    .sort((a,b)=> b-a); // 7..0
+
+  const listEl = $("weekList");
+  listEl.innerHTML = "";
+
+  // If more than 7 days left, we still show the 7..0 plan but mark as “próximamente”
+  const showAll = daysLeft >= 7;
+
+  const planToRender = showAll
+    ? CONFIG.weekPlan.slice().sort((a,b)=> b.offset-a.offset)
+    : CONFIG.weekPlan.filter(x => showOffsets.includes(x.offset)).sort((a,b)=> b.offset-a.offset);
+
+  planToRender.forEach(day=>{
+    const whenText =
+      day.offset === 0 ? "hoy" :
+      day.offset === 1 ? "mañana" :
+      `en ${day.offset} días`;
+
+    const row = document.createElement("li");
+    row.className = "tlRow";
+
+    const tasksHtml = day.tasks.map((t, idx)=>{
+      const key = `${day.offset}:${idx}`;
+      const checked = weekState[key] ? "checked" : "";
+      const disabled = (!showAll && day.offset > daysLeft) ? "disabled" : "";
+      return `
+        <div class="tlTask">
+          <input type="checkbox" id="w_${day.offset}_${idx}" ${checked} ${disabled} />
+          <label for="w_${day.offset}_${idx}">${t}</label>
+        </div>
+      `;
+    }).join("");
+
+    row.innerHTML = `
+      <div class="tlLeft">
+        <div class="tlDay">${day.title}</div>
+        <div class="tlWhen">${showAll ? whenText : whenText}</div>
+      </div>
+      <div class="tlMain">
+        <div class="tlTasks">${tasksHtml}</div>
+      </div>
+    `;
+
+    // attach listeners
+    row.querySelectorAll("input[type=checkbox]").forEach((cb, idx)=>{
+      cb.addEventListener("change", (e)=>{
+        const key = `${day.offset}:${idx}`;
+        weekState[key] = e.target.checked;
+        saveWeek();
+      });
+    });
+
+    listEl.appendChild(row);
+  });
+}
+
+$("weekResetBtn").addEventListener("click", ()=>{
+  weekState = {};
+  saveWeek();
+  updateWeekUI(lastDaysLeft ?? diffParts(target).days);
+  burst(110);
+});
+
+// initial week render
+updateWeekUI(diffParts(target).days);
+
+// =================== Confetti (canvas) ===================
 const canvas = $("confetti");
 const ctx = canvas.getContext("2d");
 let W, H, particles = [], running = false;
@@ -214,17 +613,16 @@ function resize(){
 window.addEventListener("resize", resize);
 resize();
 
-function burst(){
+function burst(n = 140){
   particles = [];
-  const n = 140;
   for(let i=0;i<n;i++){
     particles.push({
-      x: W/2 + (Math.random()*80-40),
-      y: H/2 + (Math.random()*40-20),
-      vx: (Math.random()*6-3),
-      vy: (Math.random()*-7-2),
-      g: 0.14 + Math.random()*0.08,
-      s: 3 + Math.random()*4,
+      x: W/2 + (Math.random()*140-70),
+      y: H/2 + (Math.random()*60-30),
+      vx: (Math.random()*7-3.5),
+      vy: (Math.random()*-8-2),
+      g: 0.15 + Math.random()*0.10,
+      s: 3 + Math.random()*5,
       a: 1,
       r: Math.random()*Math.PI
     });
@@ -236,23 +634,24 @@ function burst(){
 function animate(){
   if(!running) return;
   ctx.clearRect(0,0,W,H);
+
   particles.forEach(p=>{
     p.vy += p.g;
     p.x += p.vx;
     p.y += p.vy;
-    p.a -= 0.008;
-    p.r += 0.1;
+    p.a -= 0.010;
+    p.r += 0.12;
 
     ctx.save();
     ctx.globalAlpha = Math.max(p.a, 0);
     ctx.translate(p.x, p.y);
     ctx.rotate(p.r);
-    ctx.fillStyle = "rgba(255,255,255,.85)";
+    ctx.fillStyle = "rgba(255,255,255,.88)";
     ctx.fillRect(-p.s/2, -p.s/2, p.s, p.s);
     ctx.restore();
   });
 
-  particles = particles.filter(p=> p.a > 0 && p.y < H + 40);
+  particles = particles.filter(p=> p.a > 0 && p.y < H + 50);
   if(particles.length === 0){
     running = false;
     ctx.clearRect(0,0,W,H);
@@ -261,4 +660,4 @@ function animate(){
   requestAnimationFrame(animate);
 }
 
-$("confettiBtn").addEventListener("click", burst);
+$("confettiBtn").addEventListener("click", ()=> burst(180));
