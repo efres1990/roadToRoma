@@ -677,3 +677,19 @@ body.km20 .timer{
   from{ transform: scale(.95); opacity:0; }
   to{ transform: scale(1); opacity:1; }
 }
+.centerCard{
+  text-align:center;
+}
+
+.bigNumber{
+  font-size:64px;
+  font-weight:950;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+
+.locked{
+  opacity:.5;
+}

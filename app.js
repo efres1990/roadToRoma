@@ -663,6 +663,111 @@ function renderAchievements(){
     achievementsEl.appendChild(div);
   });
 }
+// =================== HISTORIA ===================
+const milestonesData = [
+  { id:"10k", title:"Primer 10K", unlocked:true },
+  { id:"media", title:"Primera Media Maratón", unlocked:true },
+  { id:"20k", title:"Primer 20K", unlocked:true },
+  { id:"25k", title:"Primer 25K", unlocked:true },
+  { id:"maraton", title:"Primera Maratón", unlocked:false }
+];
+
+function renderMilestones(){
+  const el = $("milestones");
+  if(!el) return;
+  el.innerHTML = "";
+
+  const today = new Date();
+  const raceDate = new Date(CONFIG.carreraFechaISO);
+
+  milestonesData.forEach(m=>{
+    let unlocked = m.unlocked;
+
+    if(m.id === "maraton" && today >= raceDate){
+      unlocked = true;
+    }
+
+    const li = document.createElement("li");
+    li.className = unlocked ? "tlRow" : "tlRow locked";
+    li.innerHTML = `
+      <div class="tlLeft">
+        <div class="tlDay">${unlocked ? "🏅" : "🔒"}</div>
+      </div>
+      <div class="tlMain">
+        <strong>${m.title}</strong>
+      </div>
+    `;
+    el.appendChild(li);
+  });
+}
+renderMilestones();
+
+
+// =================== CAMBIO DÍA ANTES ===================
+(function(){
+  const today = new Date();
+  const raceDate = new Date(CONFIG.carreraFechaISO);
+  const diff = Math.floor((raceDate - today)/(1000*60*60*24));
+
+  if(diff === 1){
+    $("loveNote").innerHTML =
+      "Mañana no se trata de tiempo.<br/><br/>Se trata de quién eres.<br/><br/>Y yo lo tengo clarísimo.";
+  }
+})();
+
+
+// =================== MODO DUDAS ===================
+const doubtTexts = {
+  noPuedo: "Claro que puedes. Ya has hecho cosas más difíciles que 42 km. Esto no va de fuerza. Va de constancia. Y eso te sobra.",
+  meParo: "Si te paras… respiras. Y sigues. No necesitas heroísmo. Solo un paso más.",
+  meCago: "Te ríes. Porque sabemos que el 20 es teatro. Después del 20 viene tu mejor versión."
+};
+
+document.querySelectorAll(".doubtBtn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    const type = btn.dataset.doubt;
+    const box = $("doubtResponse");
+    box.hidden = false;
+    box.innerHTML = doubtTexts[type];
+    burst(80);
+  });
+});
+
+
+// =================== CONTADOR KM ===================
+(function(){
+  const targetKm = 620; // CAMBIA SI QUIERES
+  const el = $("kmCounter");
+  if(!el) return;
+
+  let current = 0;
+  const step = Math.ceil(targetKm/100);
+
+  const interval = setInterval(()=>{
+    current += step;
+    if(current >= targetKm){
+      current = targetKm;
+      clearInterval(interval);
+    }
+    el.textContent = current;
+  }, 20);
+})();
+
+
+// =================== EASTER EGG TÍTULO ===================
+(function(){
+  const title = document.querySelector(".badge");
+  if(!title) return;
+  let clicks = 0;
+
+  title.addEventListener("click", ()=>{
+    clicks++;
+    if(clicks === 5){
+      alert("CONFESIÓN: En el km 20 no te cagas. Te conviertes en emperatriz.");
+      clicks = 0;
+    }
+  });
+})();
 
 function unlock25k(){
   // evitar duplicado
