@@ -693,3 +693,35 @@ body.km20 .timer{
 .locked{
   opacity:.5;
 }
+.heroAchievement{
+  margin:14px 0;
+  padding:14px;
+  border-radius:18px;
+  border:1px solid rgba(124,255,138,.4);
+  background: linear-gradient(180deg, rgba(124,255,138,.18), rgba(255,255,255,.05));
+  animation: fadeUp .6s ease;
+}
+
+.heroAchBadge{
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.5px;
+  text-transform:uppercase;
+  color: var(--accent);
+}
+
+.heroAchTitle{
+  font-size:18px;
+  font-weight:950;
+  margin:4px 0;
+}
+
+.heroAchDate{
+  font-size:12px;
+  color: var(--muted);
+}
+
+@keyframes fadeUp{
+  from{ opacity:0; transform: translateY(8px); }
+  to{ opacity:1; transform: translateY(0); }
+}

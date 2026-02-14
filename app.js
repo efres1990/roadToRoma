@@ -756,6 +756,40 @@ function unlock25k(){
 on("unlock25kBtn", "click", unlock25k);
 
 renderAchievements();
+// =================== HERO LOGRO 25K ===================
+const heroAchievementKey = "roadToRoma_hero25k_v1";
+
+function showHero25k(){
+  const box = $("heroAchievement");
+  const dateEl = $("heroAchDate");
+  if(!box || !dateEl) return;
+
+  const today = new Date().toLocaleDateString("es-ES", {
+    weekday:"long",
+    day:"numeric",
+    month:"long",
+    year:"numeric"
+  });
+
+  dateEl.textContent = today;
+  box.hidden = false;
+}
+
+function unlockHero25k(){
+  if(localStorage.getItem(heroAchievementKey)) return;
+
+  localStorage.setItem(heroAchievementKey, "true");
+  showHero25k();
+  burst(180);
+}
+
+// 🔥 ACTÍVALO HOY (puedes borrarlo mañana si quieres)
+unlockHero25k();
+
+// Si ya estaba guardado, lo mostramos
+if(localStorage.getItem(heroAchievementKey)){
+  showHero25k();
+}
   // =================== Confetti (canvas) ===================
   const canvas = $("confetti");
   const ctx = canvas ? canvas.getContext("2d") : null;
