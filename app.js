@@ -633,7 +633,63 @@ document.addEventListener("DOMContentLoaded", () => {
   on("calcBtn", "click", calcPace);
   on("savePaceBtn", "click", savePace);
   loadPace();
+// =================== LOGROS ===================
+const achievementKey = "roadToRoma_achievements_v1";
+let achievements = JSON.parse(localStorage.getItem(achievementKey) || "[]");
 
+const achievementsEl = $("achievements");
+
+function saveAchievements(){
+  localStorage.setItem(achievementKey, JSON.stringify(achievements));
+}
+
+function renderAchievements(){
+  if(!achievementsEl) return;
+  achievementsEl.innerHTML = "";
+
+  if(achievements.length === 0){
+    achievementsEl.innerHTML = `<div class="muted">Aún no hay logros desbloqueados.</div>`;
+    return;
+  }
+
+  achievements.forEach(a=>{
+    const div = document.createElement("div");
+    div.className = "achievement";
+    div.innerHTML = `
+      <div class="achievementTitle">🏅 ${a.title}</div>
+      <div>${a.text}</div>
+      <div class="achievementDate">${a.date}</div>
+    `;
+    achievementsEl.appendChild(div);
+  });
+}
+
+function unlock25k(){
+  // evitar duplicado
+  if(achievements.some(a => a.id === "25k")) return;
+
+  const today = new Date().toLocaleDateString("es-ES", {
+    weekday:"long",
+    day:"numeric",
+    month:"long",
+    year:"numeric"
+  });
+
+  achievements.unshift({
+    id: "25k",
+    title: "Primer 25K",
+    text: "Has cruzado una barrera mental enorme. Ya sabes que puedes ir más allá de lo cómodo. Roma empieza a parecer inevitable.",
+    date: today
+  });
+
+  saveAchievements();
+  renderAchievements();
+  burst(180);
+}
+
+on("unlock25kBtn", "click", unlock25k);
+
+renderAchievements();
   // =================== Confetti (canvas) ===================
   const canvas = $("confetti");
   const ctx = canvas ? canvas.getContext("2d") : null;
